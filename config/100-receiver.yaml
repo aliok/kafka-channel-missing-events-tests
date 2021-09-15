@@ -1,0 +1,44 @@
+## generated using
+## k run greeter --image=docker.io/aliok/kafka-src-missing-events-tests-receiver --restart='Always' --port=8080 --expose=true --dry-run -o yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: receiver
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    run: receiver
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    run: receiver
+  name: receiver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: receiver
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: receiver
+    spec:
+      containers:
+        - image: docker.io/aliok/kafka-src-missing-events-tests-receiver
+          name: receiver
+          ports:
+            - containerPort: 8080
+          resources: {}
+          env:
+            - name: RECEIVE_DURATION
+              value: '50000'  # 50 seconds

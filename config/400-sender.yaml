@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    run: sender
+  name: sender
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: sender
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: sender
+    spec:
+      containers:
+        - image: docker.io/aliok/kafka-src-missing-events-tests-sender
+          name: sender
+          ports:
+            - containerPort: 8080
+          resources: {}
