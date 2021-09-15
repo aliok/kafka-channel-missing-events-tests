@@ -7,7 +7,14 @@ if (!sendDuration) {
 }
 // ignore exceptions
 sendDuration = parseInt(sendDuration, 10);
-const SEND_FREQUENCY = 10;	// N ms
+
+let sendFrequency = process.env['SEND_FREQUENCY'];
+if (!sendFrequency) {
+    console.log("SEND_FREQUENCY env var is not defined");
+    process.exit(-1);
+}
+// ignore exceptions
+sendFrequency = parseInt(sendFrequency, 10);
 
 let sinkUrl = process.env['K_SINK'];
 if (!sinkUrl) {
@@ -26,12 +33,18 @@ let startTime = new Date().getTime();
 let eventIndex = 0;
 let success = 0;
 let error = 0;
+let trialsMap = {};
 
 console.log('Producer ready, sending events for ' + sendDuration + ' milliseconds');
 
 let internal = setInterval(function () {
     let currentTime = new Date().getTime();
-    console.log("Emitting event #" + ++eventIndex + ". Remaining time (in seconds): " + ((startTime + sendDuration - currentTime) / 1000));
+
+    eventIndex++;
+
+    if (eventIndex % 100 === 0) {
+        console.log("Emitting event #" + eventIndex + ". Remaining time (in seconds): " + ((startTime + sendDuration - currentTime) / 1000));
+    }
 
     let myevent = new CloudEvent({
         source: "urn:event:from:my-api/resource/123",
@@ -41,19 +54,7 @@ let internal = setInterval(function () {
         data: {"hello": "" + eventIndex},
     });
 
-    // Emit the event
-    emitter.send(myevent)
-        .then(response => {
-            // Treat the response
-            console.log("Event #" + eventIndex + " posted successfully");
-            success++;
-        })
-        .catch(err => {
-            // Deal with errors
-            console.log("Error during event post");
-            console.error(err);
-            error++;
-        });
+    sendEventWithRetry(emitter, myevent, 1);
 
     if (startTime + sendDuration <= currentTime) {
         clearInterval(internal);
@@ -64,15 +65,43 @@ let internal = setInterval(function () {
             console.log("Success:" + success);
             console.log("Errors:" + error);
             console.log("Starting to sleep now");
-        }, 5 * 1000);
+        }, 10 * 1000);
         setInterval(function () {
             // sleep forever until killed
         }, 1000);
     }
 
-}, SEND_FREQUENCY);
+}, sendFrequency);
 
 registerGracefulExit();
+
+function sendEventWithRetry(emitter, e, tries) {
+    emitter.send(e, {timeout: 200})
+        .then(response => {
+            // Treat the response
+            // console.log("Event #" + JSON.stringify(e.data) + " posted successfully");
+            success++;
+        })
+        .catch(err => {
+            // Deal with errors
+            if (tries < 100) {
+                console.log("Error during event post try #" + tries + " , gonna retry: " + JSON.stringify(e.data));
+                let currentTime = new Date().getTime();
+                if (startTime + sendDuration <= currentTime) {
+                    // then sending is over, but retries continue
+                    console.error(err);
+                }
+                // error++;
+                setTimeout(function () {
+                    sendEventWithRetry(emitter, e, tries + 1);
+                }, sendFrequency);
+            } else {
+                console.log("Error during event post try #" + tries + " , won't retry : " + JSON.stringify(e.data));
+                console.error(err);
+                error++;
+            }
+        });
+}
 
 function registerGracefulExit() {
     let logExit = function () {
