@@ -23,7 +23,8 @@ let latestEventIndex = 0;
 const receivedMessages = [];
 
 app.all('*', function (req, res) {
-    latestEventIndex = req.body.toString('utf8');
+    const message = JSON.parse(req.body.toString('utf8'));
+    latestEventIndex = message['hello'];
     if (receivedMessages[latestEventIndex]) {
         receivedMessages[latestEventIndex] = receivedMessages[latestEventIndex] + 1;
     } else {
@@ -36,7 +37,7 @@ app.all('*', function (req, res) {
             doAnalysis();
         }, receiveDuration);
     }
-    console.log("Received message: " + String(req.body));
+    console.log("Received message: " + String(req.body) + " with index extracted " + latestEventIndex);
     receivedMessageCount++;
 
     res.status(202).send('');
@@ -93,7 +94,7 @@ function registerGracefulExit() {
         console.error((new Date).toUTCString() + ' uncaughtException:', err.message)
         console.error(err.stack)
         logExit();
-    })
+    });
 
     // handle graceful exit
     //do something when app is closing
