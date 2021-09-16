@@ -1,4 +1,7 @@
 const {CloudEvent, HTTPEmitter} = require("cloudevents-sdk");
+const axios = require('axios');
+
+const CancelToken = axios.CancelToken;
 
 let sendDuration = process.env['SEND_DURATION'];
 if (!sendDuration) {
@@ -76,10 +79,23 @@ let internal = setInterval(function () {
 registerGracefulExit();
 
 function sendEventWithRetry(emitter, e, tries) {
-    emitter.send(e, {timeout: 200})
+    let cancel;
+    let cancelTimeout;
+    let axiosOpts = {
+        cancelToken: new CancelToken(function executor(c) {
+            // An executor function receives a cancel function as a parameter
+            cancel = c;
+        })
+    };
+    cancelTimeout = setTimeout(function () {
+        cancel();
+    }, 100);
+
+    emitter.send(e, axiosOpts)
         .then(response => {
             // Treat the response
             // console.log("Event #" + JSON.stringify(e.data) + " posted successfully");
+            clearTimeout(cancelTimeout);
             success++;
         })
         .catch(err => {
