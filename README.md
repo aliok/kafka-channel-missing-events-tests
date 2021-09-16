@@ -76,6 +76,37 @@ k apply -f config/200-kafka-channel.yaml
 k apply -f config/500-sender-sinkbinding.yaml
 ```
 
+Output of sender:
+```
+...
+sender-5d9458ccf9-7t4tm sender Emitting event #2600. Remaining time (in seconds): 3.454
+sender-5d9458ccf9-7t4tm sender Emitting event #2700. Remaining time (in seconds): 2.43
+sender-5d9458ccf9-7t4tm sender Emitting event #2800. Remaining time (in seconds): 1.414
+sender-5d9458ccf9-7t4tm sender Emitting event #2900. Remaining time (in seconds): 0.393
+sender-5d9458ccf9-7t4tm sender Stopped sending messages.
+sender-5d9458ccf9-7t4tm sender Sleeping for 5 seconds to finalize message sending.
+sender-5d9458ccf9-7t4tm sender In 30 seconds, tried to send 2940 messages
+sender-5d9458ccf9-7t4tm sender Success:2940
+sender-5d9458ccf9-7t4tm sender Errors:0
+sender-5d9458ccf9-7t4tm sender Starting to sleep now
+```
+
+Output of receiver:
+```
+...
+receiver-7649b9bdf6-p5tgb receiver Received message: {"hello":"2936"} with index extracted 2936
+receiver-7649b9bdf6-p5tgb receiver Received message: {"hello":"2937"} with index extracted 2937
+receiver-7649b9bdf6-p5tgb receiver Received message: {"hello":"2938"} with index extracted 2938
+receiver-7649b9bdf6-p5tgb receiver Received message: {"hello":"2939"} with index extracted 2939
+receiver-7649b9bdf6-p5tgb receiver Received message: {"hello":"2940"} with index extracted 2940
+receiver-7649b9bdf6-p5tgb receiver Receiving duration has passed!
+receiver-7649b9bdf6-p5tgb receiver Total received message count: 2778
+receiver-7649b9bdf6-p5tgb receiver Latest message index: 2940
+receiver-7649b9bdf6-p5tgb receiver Missing messages count: 162
+receiver-7649b9bdf6-p5tgb receiver Missing messages: 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162
+receiver-7649b9bdf6-p5tgb receiver Duplicate messages: {}
+```
+
 
 
 
