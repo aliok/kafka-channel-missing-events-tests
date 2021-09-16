@@ -100,7 +100,7 @@ function sendEventWithRetry(emitter, e, tries) {
         })
         .catch(err => {
             // Deal with errors
-            if (tries < 100) {
+            if (tries < 1000) {
                 console.log("Error during event post try #" + tries + " , gonna retry: " + JSON.stringify(e.data));
                 let currentTime = new Date().getTime();
                 if (startTime + sendDuration <= currentTime) {
@@ -110,7 +110,7 @@ function sendEventWithRetry(emitter, e, tries) {
                 // error++;
                 setTimeout(function () {
                     sendEventWithRetry(emitter, e, tries + 1);
-                }, sendFrequency);
+                }, sendFrequency * 5);
             } else {
                 console.log("Error during event post try #" + tries + " , won't retry : " + JSON.stringify(e.data));
                 console.error(err);
