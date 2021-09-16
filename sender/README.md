@@ -1,4 +1,4 @@
 ```
-docker build ./sender/ -t aliok/kafka-src-missing-events-tests-sender
-docker push aliok/kafka-src-missing-events-tests-sender
+docker build ./sender/ -t aliok/kafka-ch-missing-events-tests-sender
+docker push aliok/kafka-ch-missing-events-tests-sender
 ```

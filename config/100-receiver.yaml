@@ -34,7 +34,7 @@ spec:
         run: receiver
     spec:
       containers:
-        - image: docker.io/aliok/kafka-src-missing-events-tests-receiver
+        - image: docker.io/aliok/kafka-ch-missing-events-tests-receiver
           name: receiver
           ports:
             - containerPort: 8080

@@ -18,8 +18,13 @@ spec:
         run: sender
     spec:
       containers:
-        - image: docker.io/aliok/kafka-src-missing-events-tests-sender
+        - image: docker.io/aliok/kafka-ch-missing-events-tests-sender
           name: sender
           ports:
             - containerPort: 8080
           resources: {}
+          env:
+            - name: SEND_DURATION
+              value: '30000'  # milliseconds
+            - name: SEND_FREQUENCY
+              value: '10'  # milliseconds
