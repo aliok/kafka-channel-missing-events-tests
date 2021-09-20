@@ -27,4 +27,6 @@ spec:
             - name: SEND_DURATION
               value: '30000'  # milliseconds
             - name: SEND_FREQUENCY
-              value: '10'  # milliseconds
+              value: '5'  # milliseconds
+            - name: K_SINK
+              value: "http://kafka-channel-kn-channel.default.svc.cluster.local"

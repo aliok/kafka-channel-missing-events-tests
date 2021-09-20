@@ -65,15 +65,9 @@ k delete pod -l run=receiver
 
 k apply -f config/400-sender.yaml
 
-# watch KafkaTopic
-kubectl -n kafka exec -it my-cluster-kafka-0 -- bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic knative-messaging-kafka.default.kafka-channel --from-beginning
 
-# watch pods
-stern receiver
-stern sender
-
-k apply -f config/200-kafka-channel.yaml
 k apply -f config/500-sender-sinkbinding.yaml
+k apply -f config/200-kafka-channel.yaml
 ```
 
 Output of sender:
