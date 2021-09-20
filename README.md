@@ -56,7 +56,6 @@ Install 0.24 stuff:
 
 Reproduce:
 ```
-k delete -f config/500-sender-sinkbinding.yaml
 k delete -f config/400-sender.yaml
 
 # make sure to delete the channel, so that the topic and the consumergroup is deleted
@@ -66,7 +65,6 @@ k delete pod -l run=receiver
 k apply -f config/400-sender.yaml
 
 
-k apply -f config/500-sender-sinkbinding.yaml
 k apply -f config/200-kafka-channel.yaml
 ```
 
