@@ -64,8 +64,13 @@ k delete pod -l run=receiver
 
 k apply -f config/400-sender.yaml
 
-
 k apply -f config/200-kafka-channel.yaml
+```
+
+
+List offsets
+```
+kubectl -n kafka exec -it my-cluster-kafka-0 -- bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --all-groups
 ```
 
 Output of sender:
