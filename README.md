@@ -61,6 +61,7 @@ k apply -f config/100-receiver.yaml
 k apply -f config/200-kafka-channel.yaml
 k apply -f config/300-subscription.yaml
 k apply -f config/400-sender.yaml
+sleep 15
 
 # create the conditions for the issue
 k delete -f config/400-sender.yaml
