@@ -56,35 +56,24 @@ Install 0.24 stuff:
 
 Reproduce:
 ```
+# precreate everything so that images are pulled
+k apply -f config/100-receiver.yaml
+k apply -f config/200-kafka-channel.yaml
+k apply -f config/300-subscription.yaml
+k apply -f config/400-sender.yaml
+
+# create the conditions for the issue
 k delete -f config/400-sender.yaml
 k delete -f config/300-subscription.yaml
 k delete -f config/200-kafka-channel.yaml
 k delete pod -l run=receiver
 k apply -f config/200-kafka-channel.yaml
+sleep 5
 nohup kubectl delete pods -n knative-eventing -l messaging.knative.dev/role=dispatcher &
 k apply -f config/300-subscription.yaml
 k apply -f config/400-sender.yaml
-```
 
-
-List offsets
-```
-kubectl -n kafka exec -it my-cluster-kafka-0 -- bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --all-groups
-```
-
-Output of sender:
-```
-...
-sender-5d9458ccf9-7t4tm sender Emitting event #2600. Remaining time (in seconds): 3.454
-sender-5d9458ccf9-7t4tm sender Emitting event #2700. Remaining time (in seconds): 2.43
-sender-5d9458ccf9-7t4tm sender Emitting event #2800. Remaining time (in seconds): 1.414
-sender-5d9458ccf9-7t4tm sender Emitting event #2900. Remaining time (in seconds): 0.393
-sender-5d9458ccf9-7t4tm sender Stopped sending messages.
-sender-5d9458ccf9-7t4tm sender Sleeping for 5 seconds to finalize message sending.
-sender-5d9458ccf9-7t4tm sender In 30 seconds, tried to send 2940 messages
-sender-5d9458ccf9-7t4tm sender Success:2940
-sender-5d9458ccf9-7t4tm sender Errors:0
-sender-5d9458ccf9-7t4tm sender Starting to sleep now
+# Now is the time to check the output of the receiver
 ```
 
 Output of receiver:
@@ -103,6 +92,27 @@ receiver-7649b9bdf6-p5tgb receiver Missing messages: 1,2,3,4,5,6,7,8,9,10,11,12,
 receiver-7649b9bdf6-p5tgb receiver Duplicate messages: {}
 ```
 
+
+Output of sender:
+```
+...
+sender-5d9458ccf9-7t4tm sender Emitting event #2600. Remaining time (in seconds): 3.454
+sender-5d9458ccf9-7t4tm sender Emitting event #2700. Remaining time (in seconds): 2.43
+sender-5d9458ccf9-7t4tm sender Emitting event #2800. Remaining time (in seconds): 1.414
+sender-5d9458ccf9-7t4tm sender Emitting event #2900. Remaining time (in seconds): 0.393
+sender-5d9458ccf9-7t4tm sender Stopped sending messages.
+sender-5d9458ccf9-7t4tm sender Sleeping for 5 seconds to finalize message sending.
+sender-5d9458ccf9-7t4tm sender In 30 seconds, tried to send 2940 messages
+sender-5d9458ccf9-7t4tm sender Success:2940
+sender-5d9458ccf9-7t4tm sender Errors:0
+sender-5d9458ccf9-7t4tm sender Starting to sleep now
+```
+
+
+List offsets, if you're interested in that
+```
+kubectl -n kafka exec -it my-cluster-kafka-0 -- bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --all-groups
+```
 
 
 
