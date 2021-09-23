@@ -57,14 +57,13 @@ Install 0.24 stuff:
 Reproduce:
 ```
 k delete -f config/400-sender.yaml
-
-# make sure to delete the channel, so that the topic and the consumergroup is deleted
+k delete -f config/300-subscription.yaml
 k delete -f config/200-kafka-channel.yaml
 k delete pod -l run=receiver
-
-k apply -f config/400-sender.yaml
-
 k apply -f config/200-kafka-channel.yaml
+nohup kubectl delete pods -n knative-eventing -l messaging.knative.dev/role=dispatcher &
+k apply -f config/300-subscription.yaml
+k apply -f config/400-sender.yaml
 ```
 
 
@@ -107,6 +106,8 @@ receiver-7649b9bdf6-p5tgb receiver Duplicate messages: {}
 
 
 
+## OLD INFO
+## OLD INFO
 ## OLD INFO
 
 Create receiver, channel, subscription:
